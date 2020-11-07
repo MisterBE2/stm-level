@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "display/display.h"
+#include "level/level.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,9 +34,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define FONT_1206 12
-#define FONT_1608 16
-#define LINE_LENGTH 30
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -108,12 +106,7 @@ int main(void) {
 	/* USER CODE BEGIN 2 */
 	displayInit();
 
-	float vectorHalfLength = LINE_LENGTH / 2;
-	int vectorX = 0;
-	int vectorY = 0;
-	float slope = 96/3.14f;
-	int sx, sy, ex, ey;
-
+	float angleRange = 3.14 / 5;
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -123,42 +116,17 @@ int main(void) {
 		MX_USB_HOST_Process();
 
 		/* USER CODE BEGIN 3 */
-		for (float i = 0; i < 6.28f; i += 0.1f) {
-			vectorX = vectorHalfLength * cos(i);
-			vectorY = vectorHalfLength * sin(i);
-
-			sx = - vectorX;
-			sy = - vectorY;
-			ex = vectorX;
-			ey = vectorY;
-
-			if(i <= 3.14) {
-				displayTranslateOrigin(slope * i, 32);
-			} else {
-				displayTranslateOrigin(96-(slope * (i-3.14)), 32);
-			}
-
-			displayDrawLine(sx, sy, ex, ey, WHITE);
-
-			vectorX = vectorHalfLength * cos(i+1.57f);
-			vectorY = vectorHalfLength * sin(i+1.57f);
-
-			sx = - vectorX;
-			sy = - vectorY;
-			ex = vectorX;
-			ey = vectorY;
-
-			if(i <= 3.14) {
-				displayTranslateOrigin(slope * i, 32);
-			} else {
-				displayTranslateOrigin(96-(slope * (i-3.14)), 32);
-			}
-
-			displayDrawLine(sx, sy, ex, ey, WHITE);
-
+		for (float i = -angleRange; i < angleRange; i += 0.01f) {
+			levelDrawUi(i);
+			levelDrawStaticUi();
 			displayUpdate();
 		}
 
+		for (float i = angleRange; i > -angleRange; i -= 0.01f) {
+			levelDrawUi(i);
+			levelDrawStaticUi();
+			displayUpdate();
+		}
 	}
 	/* USER CODE END 3 */
 }
