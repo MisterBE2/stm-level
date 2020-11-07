@@ -30,7 +30,7 @@
 #define SSD1331_DATA                    1
                  
 #define OLED_WIDTH                      96
-#define OLED_HEIGHT                     64
+#define OLED_HEIGTH                     64
 
 /* Private macro -------------------------------------------------------------*/
 #define DRAW_LINE                       0x21
@@ -111,7 +111,7 @@ static void ssd1331_write_byte(uint8_t chData, uint8_t chCmd)
 
 void ssd1331_draw_point(uint8_t chXpos, uint8_t chYpos, uint16_t hwColor) 
 {
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 
@@ -122,7 +122,7 @@ void ssd1331_draw_point(uint8_t chXpos, uint8_t chYpos, uint16_t hwColor)
     //set row point
     ssd1331_write_byte(SET_ROW_ADDRESS, SSD1331_CMD);
     ssd1331_write_byte(chYpos, SSD1331_CMD);
-    ssd1331_write_byte(OLED_HEIGHT - 1, SSD1331_CMD);
+    ssd1331_write_byte(OLED_HEIGTH - 1, SSD1331_CMD);
     
     //fill 16bit colour
 	ssd1331_write_byte(hwColor >> 8, SSD1331_DATA);
@@ -137,7 +137,7 @@ void ssd1331_draw_line(uint8_t chXpos0, uint8_t chYpos0, uint8_t chXpos1, uint8_
     int dy = -abs(y), sy = chYpos0 < chYpos1 ? 1 : -1;
     int err = dx + dy, e2;
 
-	if (chXpos0 >= OLED_WIDTH || chYpos0 >= OLED_HEIGHT || chXpos1 >= OLED_WIDTH || chYpos1 >= OLED_HEIGHT) {
+	if (chXpos0 >= OLED_WIDTH || chYpos0 >= OLED_HEIGTH || chXpos1 >= OLED_WIDTH || chYpos1 >= OLED_HEIGTH) {
 		return;
 	}
     
@@ -157,9 +157,9 @@ void ssd1331_draw_line(uint8_t chXpos0, uint8_t chYpos0, uint8_t chXpos1, uint8_
 
 void ssd1331_draw_v_line(uint8_t chXpos, uint8_t chYpos, uint8_t chHeight, uint16_t hwColor)
 {	
-	uint16_t i, y1 = MIN(chYpos + chHeight, OLED_HEIGHT - 1);
+	uint16_t i, y1 = MIN(chYpos + chHeight, OLED_HEIGTH - 1);
 
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 	
@@ -172,7 +172,7 @@ void ssd1331_draw_h_line(uint8_t chXpos, uint8_t chYpos, uint8_t chWidth, uint16
 {	
 	uint16_t i, x1 = MIN(chXpos + chWidth, OLED_WIDTH- 1);
 
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 	
@@ -183,7 +183,7 @@ void ssd1331_draw_h_line(uint8_t chXpos, uint8_t chYpos, uint8_t chWidth, uint16
 
 void ssd1331_draw_rect(uint8_t chXpos, uint8_t chYpos, uint8_t chWidth, uint8_t chHeight, uint16_t hwColor)
 {
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 
@@ -197,7 +197,7 @@ void ssd1331_fill_rect(uint8_t chXpos, uint8_t chYpos, uint8_t chWidth, uint8_t 
 {
 	uint16_t i, j;
 
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 	
@@ -212,7 +212,7 @@ void ssd1331_draw_circle(uint8_t chXpos, uint8_t chYpos, uint8_t chRadius, uint1
 {
 	int x = -chRadius, y = 0, err = 2 - 2 * chRadius, e2;
 
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 	
@@ -244,7 +244,7 @@ void ssd1331_display_char(uint8_t chXpos, uint8_t chYpos, uint8_t chChr, uint8_t
 	uint8_t i, j, chTemp;
 	uint8_t chYpos0 = chYpos;
 
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 					   
@@ -284,7 +284,7 @@ void ssd1331_display_num(uint8_t chXpos, uint8_t chYpos, uint32_t chNum, uint8_t
 	uint8_t i;
 	uint8_t chTemp, chShow = 0;
 
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 	
@@ -314,7 +314,7 @@ void ssd1331_display_num(uint8_t chXpos, uint8_t chYpos, uint32_t chNum, uint8_t
 **/
 void ssd1331_display_string(uint8_t chXpos, uint8_t chYpos, const uint8_t *pchString, uint8_t chSize, uint16_t hwColor)
 {
-	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGHT) {
+	if (chXpos >= OLED_WIDTH || chYpos >= OLED_HEIGTH) {
 		return;
 	}
 	
@@ -322,7 +322,7 @@ void ssd1331_display_string(uint8_t chXpos, uint8_t chYpos, const uint8_t *pchSt
         if (chXpos > (OLED_WIDTH - chSize / 2)) {
 			chXpos = 0;
 			chYpos += chSize;
-			if (chYpos > (OLED_HEIGHT - chSize)) {
+			if (chYpos > (OLED_HEIGTH - chSize)) {
 				chYpos = chXpos = 0;
 				ssd1331_clear_screen(0x00);
 			}
@@ -395,7 +395,7 @@ void ssd1331_clear_screen(uint16_t hwColor)
 {
 	uint16_t i, j;
 	
-	for(i = 0; i < OLED_HEIGHT; i ++){
+	for(i = 0; i < OLED_HEIGTH; i ++){
 		for(j = 0; j < OLED_WIDTH; j ++){
 			ssd1331_draw_point(j, i, hwColor);
 		}

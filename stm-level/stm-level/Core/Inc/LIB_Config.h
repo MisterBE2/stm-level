@@ -40,13 +40,13 @@ extern SPI_HandleTypeDef hspi1;
 #define __SSD1331_CS_CLR()      HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
 
 // Transmisja danych przez SPI w trybie blokujacym
-//#define __SSD1331_WRITE_BYTE(__DATA) HAL_SPI_Transmit(&hspi1, &__DATA, 1, 1000)
+#define __SSD1331_WRITE_BYTE(__DATA) HAL_SPI_Transmit(&hspi1, &__DATA, 1, 1000)
 
 // Transmisja danych przez SPI z wykorzystaniem przerwan
 //#define __SSD1331_WRITE_BYTE(__DATA) HAL_SPI_Transmit_IT(&hspi1, &__DATA, 1)
 
 // Transmisja danych przez SPI z wykorzystaniem DMA
-#define __SSD1331_WRITE_BYTE(__DATA) HAL_SPI_Transmit_DMA(&hspi1, &__DATA, 1)
+//#define __SSD1331_WRITE_BYTE(__DATA) HAL_SPI_Transmit_DMA(&hspi1, &__DATA, 1)
 
 
 /*------------------------------------------------------------------------------------------------------*/
