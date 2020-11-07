@@ -73,17 +73,18 @@ void displayUpdate() {
 
 	switchBuffers();
 	resetBuffer(currentFrameBuffer);
-	displayTranslateOrigin(0,0);
+	displayTranslateOrigin(0, 0);
 }
 
 void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 		uint16_t color) {
-	int xMin, xMax, yMin, yMax = 0;
 
 	posXStart += centerX;
 	posYStart += centerY;
 	posXEnd += centerX;
 	posYEnd += centerY;
+
+	int xMin, xMax, yMin, yMax = 0;
 
 	if (posXStart >= posXEnd) {
 		xMin = posXEnd;
@@ -108,8 +109,6 @@ void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 		return;
 	}
 
-	uint16_t *cb = getCurrentBuffer();
-
 	if (dx == 0) {
 
 		if (posXStart < 0 && posXStart > OLED_WIDTH) {
@@ -118,7 +117,7 @@ void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 
 		for (int y = 0; y < OLED_HEIGTH; y++) {
 			if (y >= yMin && y <= yMax) {
-				cb[twoDimmensionsToOneIndex(posXStart, y)] = color;
+				displayDrawPoint(posXStart, y, color);
 			}
 		}
 
@@ -131,7 +130,7 @@ void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 
 		for (int x = 0; x < OLED_WIDTH; x++) {
 			if (x >= xMin && x <= xMax) {
-				cb[twoDimmensionsToOneIndex(x, posYStart)] = color;
+				displayDrawPoint(x, posYStart, color);
 			}
 		}
 
@@ -148,10 +147,10 @@ void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 		for (int x = 0; x < OLED_WIDTH; x++) {
 
 			if (x >= xMin && x <= xMax) {
-				y = slope * x + offset;
+				y = round(slope * x + offset);
 
 				if (y >= 0 && y < OLED_HEIGTH && y >= yMin && y <= yMax) {
-					cb[twoDimmensionsToOneIndex(x, y)] = color;
+					displayDrawPoint(x, y, color);
 				}
 			}
 		}
@@ -161,7 +160,7 @@ void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 
 			if (y >= yMin && y <= yMax) {
 				if (slope != 0) {
-					x = (y - offset) / slope;
+					x = round((y - offset) / slope);
 				} else {
 					if (posXStart >= posXEnd) {
 						x = posXStart;
@@ -171,7 +170,7 @@ void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 				}
 
 				if (x >= 0 && x < OLED_WIDTH && x >= xMin && x <= xMax) {
-					cb[twoDimmensionsToOneIndex(x, y)] = color;
+					displayDrawPoint(x, y, color);
 				}
 			}
 		}
@@ -181,4 +180,100 @@ void displayDrawLine(int posXStart, int posYStart, int posXEnd, int posYEnd,
 void displayTranslateOrigin(int x, int y) {
 	centerX = x;
 	centerY = y;
+}
+
+void displayDrawPoint(int posX, int posY, uint16_t hwColor) {
+	if (posX >= OLED_WIDTH || posY >= OLED_HEIGTH) {
+		return;
+	}
+
+	uint16_t *cb = getCurrentBuffer();
+	cb[twoDimmensionsToOneIndex(posX, posY)] = hwColor;
+}
+
+void displayDrawChar(int posXStart, int posYStart, int chChr, int chSize,
+		uint16_t hwColor) {
+
+	uint8_t i, j, chTemp;
+	uint8_t posYStart0 = posYStart;
+
+	if (posXStart >= OLED_WIDTH || posYStart >= OLED_HEIGTH) {
+		return;
+	}
+
+	for (i = 0; i < chSize; i++) {
+		if (FONT_1206 == chSize) {
+			chTemp = c_chFont1206[chChr - 0x20][i];
+		} else if (FONT_1608 == chSize) {
+			chTemp = c_chFont1608[chChr - 0x20][i];
+		}
+
+		for (j = 0; j < 8; j++) {
+			if (chTemp & 0x80) {
+				displayDrawPoint(posXStart, posYStart, hwColor);
+			}
+			chTemp <<= 1;
+			posYStart++;
+			if ((posYStart - posYStart0) == chSize) {
+				posYStart = posYStart0;
+				posXStart++;
+				break;
+			}
+		}
+	}
+}
+
+void displayDrawString(int posXStart, int posYStart, const char *pchString,
+		int chSize, uint16_t hwColor) {
+
+	if (posXStart >= OLED_WIDTH || posYStart >= OLED_HEIGTH) {
+		return;
+	}
+
+	while (*pchString != '\0') {
+		if (posXStart > (OLED_WIDTH - chSize / 2)) {
+			posXStart = 0;
+			posYStart += chSize;
+			if (posYStart > (OLED_HEIGTH - chSize)) {
+				posYStart = posXStart = 0;
+			}
+		}
+
+		displayDrawChar(posXStart, posYStart, *pchString, chSize, hwColor);
+		posXStart += chSize / 2;
+		pchString++;
+	}
+}
+
+void displayDrawCircle(int posXStart, int posYStart, int r, uint16_t hwColor) {
+	posXStart += centerX;
+	posYStart += centerY;
+
+	int x = -r, y = 0, err = 2 - 2 * r, e2;
+
+	    do {
+	    	displayDrawPoint(posXStart - x, posYStart + y, hwColor);
+	    	displayDrawPoint(posXStart + x, posYStart + y, hwColor);
+	    	displayDrawPoint(posXStart + x, posYStart - y, hwColor);
+	    	displayDrawPoint(posXStart - x, posYStart - y, hwColor);
+	        e2 = err;
+	        if (e2 <= y) {
+	            err += ++ y * 2 + 1;
+	            if(-x == y && e2 <= x) e2 = 0;
+	        }
+	        if(e2 > x) err += ++ x * 2 + 1;
+	    } while(x <= 0);
+}
+
+void displayDrawRect(int posXStart, int posYStart, int posXEnd, int posYEnd,
+		uint16_t hwColor) {
+	posXStart += centerX;
+	posYStart += centerY;
+	posXEnd += centerX;
+	posYEnd += centerY;
+
+	displayDrawLine(posXStart, posYStart, posXStart, posXEnd, hwColor);
+	displayDrawLine(posXEnd, posYStart, posXEnd, posXEnd, hwColor);
+	displayDrawLine(posXStart, posYStart, posXEnd, posYStart, hwColor);
+	displayDrawLine(posXStart, posYEnd, posXEnd, posYEnd, hwColor);
 }
