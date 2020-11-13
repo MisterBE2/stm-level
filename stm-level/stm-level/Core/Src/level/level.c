@@ -6,6 +6,7 @@
 
 void levelDrawUi(float radians) {
 	uint16_t tmpColor = 0;
+	float originalRadians = radians;
 	int sx, sy, ex, ey, vectorX, vectorY;
 
 	float angle = levelRadiansToDegree(radians);
@@ -33,16 +34,6 @@ void levelDrawUi(float radians) {
 	displayTranslateOrigin(48, 40);
 	displayDrawLine(sx, sy, ex, ey, tmpColor);
 
-//	vectorX = CENTER_LINE_LENGTH * cos(radians + 1.57f);
-//	vectorY = CENTER_LINE_LENGTH * sin(radians + 1.57f);
-//
-//	sx = -vectorX;
-//	sy = -vectorY;
-//	ex = vectorX;
-//	ey = vectorY;
-//
-//	displayDrawLine(sx, sy, ex, ey, tmpColor);
-
 	vectorX = 15 * cos(radians);
 	vectorY = 15 * sin(radians);
 
@@ -53,7 +44,7 @@ void levelDrawUi(float radians) {
 
 	displayDrawLine(sx, sy, ex, ey, BLACK);
 	displayDrawCircle(0, 0, 15, tmpColor);
-	levelDrawAngle(radians, WHITE);
+	levelDrawAngle(originalRadians, WHITE);
 
 	displayTranslateOrigin(0, 0);
 }
